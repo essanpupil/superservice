@@ -3,6 +3,13 @@ import mysql.connector
 
 app = Flask(__name__)
 
+config = {
+  'user': 'abyan',
+  'password': 'password',
+  'host': 'terraform-20240422044038018300000001.c4avp797njw5.ap-southeast-1.rds.amazonaws.com',
+  'database': 'superservice',
+  'raise_on_warnings': True
+}
 
 @app.route('/healthcheck')
 def healthcheck():
