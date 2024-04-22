@@ -26,7 +26,6 @@ def healthcheck():
         return "Could not connect to DB"
     if cnx.is_connected():
         return "OK"
-    cnx.close()
 
 
 @app.route('/')
@@ -42,6 +41,3 @@ def polls():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
-    gunicorn_logger = logging.getLogger('gunicorn.warn')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
