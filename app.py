@@ -3,6 +3,10 @@ import mysql.connector
 import logging
 
 app = Flask(__name__)
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 
 config = {
   'user': 'abyan',
@@ -37,7 +41,7 @@ def polls():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=8080, debug=True)
     gunicorn_logger = logging.getLogger('gunicorn.warn')
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
