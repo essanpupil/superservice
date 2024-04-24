@@ -1,10 +1,12 @@
+import logging
 import os
 
-from flask import Flask, render_template
-import logging
-import urllib
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+import requests
+from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+POLL_URL = os.environ.get("POLL_URL")
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{uname}:{passwd}@{host}/{dbname}".format(
@@ -14,11 +16,15 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{uname}:{passwd}@{host}
     dbname=os.environ.get("DB_NAME")
 )
 
+
 class Base(DeclarativeBase):
     pass
 
+
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
+
+
 class Service(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(unique=True)
@@ -41,7 +47,7 @@ def healthcheck():
 def index():
     result = db.session.execute(db.select(Service).order_by(Service.name)).scalars()
     try:
-        question = urllib.request.urlopen("http://internal-polls-1382146748.ap-southeast-1.elb.amazonaws.com:8000").read()
+        question = requests.get(POLL_URL).json()
     except Exception as err:
         app.logger.error("Could not connect to Polls: %s", err)
         question = "Could not connect to Polls: {}".format(err)
@@ -49,26 +55,22 @@ def index():
     return render_template('index.html', result=result, question=question)
 
 
-@app.route('/create-service-table')
+@app.route('/create-service', methods=['POST'])
 def create_service():
-    result = db.session.execute(db.select(Service).order_by(Service.name)).scalars()
-    return render_template('index.html', result=result)
+    name = request.form.get('name')
+    endpoint = request.form.get('endpoint')
+    service = Service(name=name, endpoint=endpoint)
+    db.session.add(service)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 
-@app.route('/create-question-table')
+@app.route('/create-question', methods=['POST'])
 def create_question():
-    try:
-        question = urllib.request.urlopen("http://internal-polls-1382146748.ap-southeast-1.elb.amazonaws.com:8000/create-question-table").read()
-    except Exception as err:
-        app.logger.error("Could not connect to Polls: %s", err)
-        question = "Could not connect to Polls: {}".format(err)
-
-    return render_template('index.html', result=question)
-
-
-@app.route('/polls')
-def polls():
-    return render_template('polls.html')
+    question = request.form.get('question')
+    answer = request.form.get('answer')
+    requests.post(POLL_URL, data={"question": question, "answer": answer})
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
