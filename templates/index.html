@@ -9,9 +9,15 @@
     <p>Welcome to SuperService, the best service in the world!</p>
     <p>Here you can find the best services for your needs.</p>
     <p>Service collections:<br>
-        {{ result }}</p>
+        <table>
+        <tr><th>No</th><th>Name</th><th>Endpoint</th></tr>
+            {% for res in result %}
+        <tr><td>{{ res.id }}</td><td>{{ res.name }}</td><td>{{ res.endpoint }}</td></tr>
+        {% endfor %}
+        </table>
 
     <p>Polls question:<br>
+
         {{ question }}</p>
 
 </body>
