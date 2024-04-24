@@ -7,7 +7,13 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{uname}:{passwd}@superservice-db.c4avp797njw5.ap-southeast-1.rds.amazonaws.com/superservice".format(uname=os.environ.get("DB_USER"), passwd=os.environ.get("DB_PASSWORD"))
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{uname}:{passwd}@{host}/{dbname}".format(
+    uname=os.environ.get("DB_USER"),
+    passwd=os.environ.get("DB_PASSWORD"),
+    host=os.environ.get("DB_HOST"),
+    dbname=os.environ.get("DB_NAME")
+)
+
 class Base(DeclarativeBase):
     pass
 
