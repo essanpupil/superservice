@@ -1,12 +1,13 @@
+import ddtrace.auto
 import logging
 import os
+from ddtrace import patch
 
 import requests
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-POLL_URL = os.environ.get("POLL_URL")
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{uname}:{passwd}@{host}/{dbname}".format(
@@ -15,6 +16,14 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://{uname}:{passwd}@{host}
     host=os.environ.get("DB_HOST"),
     dbname=os.environ.get("DB_NAME")
 )
+POLL_URL = os.environ.get("POLL_URL")
+patch(sqlalchemy=True)
+patch(requests=True)
+ddtrace.config.flask['distributed_tracing_enabled'] = True
+ddtrace.config.flask['service_name'] = 'superservice'
+ddtrace.config.flask['collect_view_args'] = True
+ddtrace.config.flask['trace_signals'] = True
+ddtrace.config.requests['service'] = 'superservice-requests'
 
 
 class Base(DeclarativeBase):
