@@ -16,10 +16,22 @@
         {% endfor %}
         </table>
 
-    <p>Polls question:<br>
-
-        {{ question }}</p>
-
+    <p>Polls questions
+    <table>
+        <tr>
+            <th>No</th>
+            <th>Question</th>
+            <th>Answer</th>
+        </tr>
+        {% for res in question %}
+        <tr>
+            <td>{{ res.id }}</td>
+            <td>{{ res.question }}</td>
+            <td>{{ res.answer }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </p>
 </body>
 
 </html>

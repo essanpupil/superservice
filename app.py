@@ -47,7 +47,7 @@ def healthcheck():
 def index():
     result = db.session.execute(db.select(Service).order_by(Service.name)).scalars()
     try:
-        question = requests.get(POLL_URL).json()
+        question = requests.get(POLL_URL+"/api/questions").json()
     except Exception as err:
         app.logger.error("Could not connect to Polls: %s", err)
         question = "Could not connect to Polls: {}".format(err)
