@@ -2,6 +2,12 @@
 
 <head>
     <title>SuperService</title>
+    <style>
+        /* Solid border */
+        hr.solid {
+            border-top: 3px solid #bbb;
+        }
+    </style>
 </head>
 
 <body>
@@ -9,12 +15,20 @@
     <p>Welcome to SuperService, the best service in the world!</p>
     <p>Here you can find the best services for your needs.</p>
     <p>Service collections:<br>
-        <table>
-        <tr><th>No</th><th>Name</th><th>Endpoint</th></tr>
-            {% for res in result %}
-        <tr><td>{{ res.id }}</td><td>{{ res.name }}</td><td>{{ res.endpoint }}</td></tr>
+    <table>
+        <tr>
+            <th>No</th>
+            <th>Name</th>
+            <th>Endpoint</th>
+        </tr>
+        {% for res in result %}
+        <tr>
+            <td>{{ res.id }}</td>
+            <td>{{ res.name }}</td>
+            <td>{{ res.endpoint }}</td>
+        </tr>
         {% endfor %}
-        </table>
+    </table>
 
     <p>Polls questions
     <table>
@@ -32,6 +46,22 @@
         {% endfor %}
     </table>
     </p>
+
+    <hr class="solid">
+    <p>superservice -> bookapi</p>
+    <div id="message">Loading...</div>
+    <script>
+        const messageElement = document.getElementById('message');
+        messageElement.innerText = JSON.stringify(books, null, 4)
+    </script>
+
+    <hr class="solid">
+    <p>superservice -> poller -> bookapi</p>
+    <div id="message2">Loading...</div>
+    <script>
+        const messageElement2 = document.getElementById('message2');
+        messageElement2.innerText = JSON.stringify(booksFromPolls, null, 4)
+    </script>
 </body>
 
 </html>
